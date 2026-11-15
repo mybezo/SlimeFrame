@@ -168,6 +168,7 @@ The most important options in `plugins/SlimeFrame/config.yml`:
 | `options.enable-researches` | `false` | Lock items behind Slimefun researches |
 | `options.enable-ae-items-in-soul-contracts` | `false` | Allow AdvancedEnchantments items in soul contracts |
 | `options.ore-trade-chance` | `1` | Chance (%) that a new villager trade sells a special ore |
+| `options.enable-chunk-eater` | `false` | Enable the Chunk Eater machines (off by default, they can cause lag) |
 | `relics.lith` / `meso` / `neo` / `axi` | `50` / `750` / `10000` / `750` | Actions required per relic |
 | `drop-chance.*` | see file | Drop chances (%) per mob for special drops and reactants |
 | `messages.*` | see file | Prefix and player-facing messages |

@@ -13,6 +13,10 @@ options:
   enable-ae-items-in-soul-contracts: false
   # Probability of a villager obtaining a trade with one of the SlimeFrame ores in %
   ore-trade-chance: 1
+  # Enables the Chunk Eater, Advanced Chunk Eater and Prime Chunk Eater.
+  # Disabled by default because they scan entire chunk columns and can cause lag spikes.
+  # Requires a server restart to take effect.
+  enable-chunk-eater: false
 
 relics:
   # One lith relic every X fishes caught

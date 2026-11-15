@@ -250,23 +250,26 @@ public final class SFrameItems {
                 PrimeComponents.createControlUnit(SFrameStacks.PRIME_BASALT_GEN), PrimeComponents.createCoreModule(SFrameStacks.PRIME_BASALT_GEN), PrimeComponents.createPowerCell(SFrameStacks.PRIME_BASALT_GEN)
         }).setProduction(64).setEnergyPerTick(512).register(plugin);
 
-        new ChunkEater(SFrameStacks.CHUNK_EATER, new ItemStack[]{
-                SFrameStacks.ARGON_CRYSTAL, SlimefunItems.ENERGIZED_CAPACITOR, SFrameStacks.ARGON_CRYSTAL,
-                SFrameStacks.PYROTIC_ALLOY, XMaterial.SCULK.parseItem(), SFrameStacks.PYROTIC_ALLOY,
-                SlimefunItems.HEATING_COIL, SFrameStacks.CONTROL_MODULE, SlimefunItems.HEATING_COIL
-        }).setEnergyPerTick(1024).register(plugin);
+        // Chunk Eaters scan whole chunk columns and can cause lag, so they are opt-in
+        if (settingsManager.getBoolean(SettingsManager.ConfigField.ENABLE_CHUNK_EATER)) {
+            new ChunkEater(SFrameStacks.CHUNK_EATER, new ItemStack[]{
+                    SFrameStacks.ARGON_CRYSTAL, SlimefunItems.ENERGIZED_CAPACITOR, SFrameStacks.ARGON_CRYSTAL,
+                    SFrameStacks.PYROTIC_ALLOY, XMaterial.SCULK.parseItem(), SFrameStacks.PYROTIC_ALLOY,
+                    SlimefunItems.HEATING_COIL, SFrameStacks.CONTROL_MODULE, SlimefunItems.HEATING_COIL
+            }).setEnergyPerTick(1024).register(plugin);
 
-        new ChunkEater(SFrameStacks.ADV_CHUNK_EATER, new ItemStack[]{
-                getAlloyPlate(SFrameStacks.TRAVOCYTE_ALLOY), SlimefunItems.ENERGIZED_CAPACITOR, getAlloyPlate(SFrameStacks.TRAVOCYTE_ALLOY),
-                getAlloyPlate(SFrameStacks.TRAVOCYTE_ALLOY), SFrameStacks.CHUNK_EATER, getAlloyPlate(SFrameStacks.TRAVOCYTE_ALLOY),
-                SlimefunItems.PROGRAMMABLE_ANDROID_MINER, SFrameStacks.CONTROL_MODULE, SlimefunItems.PROGRAMMABLE_ANDROID_MINER
-        }).setCollectDestroyedBlocks().setEnergyPerTick(2048).register(plugin);
+            new ChunkEater(SFrameStacks.ADV_CHUNK_EATER, new ItemStack[]{
+                    getAlloyPlate(SFrameStacks.TRAVOCYTE_ALLOY), SlimefunItems.ENERGIZED_CAPACITOR, getAlloyPlate(SFrameStacks.TRAVOCYTE_ALLOY),
+                    getAlloyPlate(SFrameStacks.TRAVOCYTE_ALLOY), SFrameStacks.CHUNK_EATER, getAlloyPlate(SFrameStacks.TRAVOCYTE_ALLOY),
+                    SlimefunItems.PROGRAMMABLE_ANDROID_MINER, SFrameStacks.CONTROL_MODULE, SlimefunItems.PROGRAMMABLE_ANDROID_MINER
+            }).setCollectDestroyedBlocks().setEnergyPerTick(2048).register(plugin);
 
-        new ChunkEater(SFrameStacks.PRIME_CHUNK_EATER, new ItemStack[]{
-                SFrameStacks.RUBEDO, SFrameStacks.OROKIN_CELL, SFrameStacks.RUBEDO,
-                SFrameStacks.BOOSTED_TELLURIUM, SFrameStacks.ADV_CHUNK_EATER, SFrameStacks.BOOSTED_TELLURIUM,
-                PrimeComponents.createControlUnit(SFrameStacks.PRIME_CHUNK_EATER), PrimeComponents.createCoreModule(SFrameStacks.PRIME_CHUNK_EATER), PrimeComponents.createPowerCell(SFrameStacks.PRIME_CHUNK_EATER)
-        }).setLayerMode().setCollectDestroyedBlocks().setEnergyPerTick(4096).register(plugin);
+            new ChunkEater(SFrameStacks.PRIME_CHUNK_EATER, new ItemStack[]{
+                    SFrameStacks.RUBEDO, SFrameStacks.OROKIN_CELL, SFrameStacks.RUBEDO,
+                    SFrameStacks.BOOSTED_TELLURIUM, SFrameStacks.ADV_CHUNK_EATER, SFrameStacks.BOOSTED_TELLURIUM,
+                    PrimeComponents.createControlUnit(SFrameStacks.PRIME_CHUNK_EATER), PrimeComponents.createCoreModule(SFrameStacks.PRIME_CHUNK_EATER), PrimeComponents.createPowerCell(SFrameStacks.PRIME_CHUNK_EATER)
+            }).setLayerMode().setCollectDestroyedBlocks().setEnergyPerTick(4096).register(plugin);
+        }
 
         new ConcreteGenerator(Groups.MACHINES, SFrameStacks.CONCRETE_GENERATOR, Foundry.RECIPE_TYPE, new ItemStack[]{
                 SFrameStacks.FERSTEEL_ALLOY, SlimefunItems.RAINBOW_CONCRETE, SFrameStacks.FERSTEEL_ALLOY,
