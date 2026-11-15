@@ -74,8 +74,11 @@ public class SlimeFrame extends JavaPlugin implements SlimefunAddon {
         this.startTasks();
         this.logStart();
 
-        AutoUpdater autoUpdater = new AutoUpdater(this, this.getFile());
-        new Thread(autoUpdater).start();
+        // Only contact GitHub when the server owner explicitly enabled auto-updates
+        if (settingsManager.getBoolean(SettingsManager.ConfigField.AUTO_UPDATE)) {
+            AutoUpdater autoUpdater = new AutoUpdater(this, this.getFile());
+            new Thread(autoUpdater).start();
+        }
 
     }
 

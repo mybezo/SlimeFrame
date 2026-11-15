@@ -77,7 +77,7 @@ public final class SettingsManager {
     @AllArgsConstructor
     public enum ConfigField {
 
-        AUTO_UPDATE("options.auto-update", true),
+        AUTO_UPDATE("options.auto-update", false),
         AUTO_UPDATE_MAJOR("options.auto-update-major", false),
         RESEARCHES_ENABLED("options.enable-researches", true),
         ENABLE_AE_ITEMS_IN_SOUL_CONTRACTS("options.enable-ae-items-in-soul-contracts", false),

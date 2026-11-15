@@ -1,5 +1,8 @@
 options:
-  auto-update: true
+  # Disabled by default: the updater downloads releases from the upstream repository
+  # (VoperAD/SlimeFrame), which would replace this build and its 1.21+ compatibility fixes.
+  # When set to false, SlimeFrame does not check for updates at all.
+  auto-update: false
   # If set to true, the plugin will automatically update to the latest major version
   # This option is only available if auto-update is set to true
   # Be careful with this option, as a new major version represents a breaking change

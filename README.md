@@ -163,7 +163,7 @@ The most important options in `plugins/SlimeFrame/config.yml`:
 
 | Option | Default | Description |
 |---|---|---|
-| `options.auto-update` | `true` | Automatically download new (non-major) releases |
+| `options.auto-update` | `false` | Check for and download new releases from upstream (disabled by default, as upstream builds lack this fork's fixes) |
 | `options.auto-update-major` | `false` | Also auto-download major (potentially breaking) releases |
 | `options.enable-researches` | `false` | Lock items behind Slimefun researches |
 | `options.enable-ae-items-in-soul-contracts` | `false` | Allow AdvancedEnchantments items in soul contracts |
