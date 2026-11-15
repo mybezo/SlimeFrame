@@ -50,8 +50,7 @@ import net.md_5.bungee.api.ChatColor;
 public class AutoTrader extends AbstractProcessorMachine implements RecipeDisplayItem {
 
     private static final String BLOCK_KEY = "auto_trader";
-    private static final ItemStack SELECT_TRADE = new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE,
-        ChatColor.GREEN + "有效的契约", ChatColor.WHITE + "选择一个交易");
+    private static final ItemStack SELECT_TRADE = new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, ChatColor.GREEN + "Valid Contract", ChatColor.WHITE + "Select one of the trades");
 
     private static final Map<BlockPosition, List<MerchantRecipe>> recipesMap = new HashMap<>();
     private static final Map<BlockPosition, Integer> selectedTradeMap = new HashMap<>();
@@ -65,9 +64,10 @@ public class AutoTrader extends AbstractProcessorMachine implements RecipeDispla
         final BlockPosition bp = new BlockPosition(menu.getLocation());
         Integer trade = selectedTradeMap.get(bp);
 
-        if (trade == -1) return null;
+        if (trade == null || trade == -1) return null;
 
         List<MerchantRecipe> recipeList = recipesMap.get(bp);
+        if (recipeList == null || trade >= recipeList.size()) return null;
         MerchantRecipe selectedRecipe = recipeList.get(trade);
 
         // Creates a slot-ItemStack map according to the input slots
@@ -145,11 +145,13 @@ public class AutoTrader extends AbstractProcessorMachine implements RecipeDispla
         if (recipes == null || !compareMerchantRecipes(recipeList, recipes)) {
             recipesMap.put(bp, recipeList);
             selectedTradeMap.put(bp, -1);
+            BlockStorage.addBlockInfo(menu.getLocation(), BLOCK_KEY, String.valueOf(-1));
             updateTradesSlots(menu, contractItemMeta);
+            trade = -1;
         }
 
         // If no trade was selected
-        if (trade == -1) {
+        if (trade == null || trade == -1) {
             menu.replaceExistingItem(getStatusSlot(), SELECT_TRADE);
         } else {
             // One of the trades is selected but the machine is not running an operation
@@ -176,10 +178,9 @@ public class AutoTrader extends AbstractProcessorMachine implements RecipeDispla
 
     @Override
     protected void onCraftConditionsNotMet(BlockMenu menu) {
-        MachineUtils.replaceExistingItemViewer(menu, getStatusSlot(), new CustomItemStack(Material.BARRIER,
-            ChatColor.DARK_RED + "需要商人灵魂契约",
-                ChatColor.RED + "契约栏位必须有一个",
-                ChatColor.RED + "有效的商人灵魂契约！")
+        MachineUtils.replaceExistingItemViewer(menu, getStatusSlot(), new CustomItemStack(Material.BARRIER, ChatColor.DARK_RED + "Merchant Soul Contract required",
+                ChatColor.RED + "There must be a valid merchant contract",
+                ChatColor.RED + "in the contract slot!")
         );
         MachineUtils.replaceExistingItemViewer(menu, getTradesSlots(), new CustomItemStack(Material.RED_STAINED_GLASS_PANE, " "));
     }
@@ -188,12 +189,20 @@ public class AutoTrader extends AbstractProcessorMachine implements RecipeDispla
         List<String> lore = contractMeta.getLore();
         if (lore == null) return;
 
+        if (lore.size() < 2) return;
+
         List<String> trades = lore.subList(2, lore.size()).stream()
                 .map(s -> s.substring(s.indexOf("-") + 1).trim())
                 .toList();
 
-        for (int i = 0; i < trades.size(); i++) {
-            menu.replaceExistingItem(getTradesSlots()[i], new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, ChatColor.GREEN + "Trade " + (i + 1), trades.get(i)));
+        int[] tradesSlots = getTradesSlots();
+        for (int i = 0; i < tradesSlots.length; i++) {
+            if (i < trades.size()) {
+                menu.replaceExistingItem(tradesSlots[i], new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, ChatColor.GREEN + "Trade " + (i + 1), trades.get(i)));
+            } else {
+                // Lock the slots that were used by a previous contract with more trades
+                menu.replaceExistingItem(tradesSlots[i], new CustomItemStack(Material.RED_STAINED_GLASS_PANE, " "));
+            }
         }
     }
 
@@ -224,7 +233,8 @@ public class AutoTrader extends AbstractProcessorMachine implements RecipeDispla
             selectedTradeMap.put(bp, -1);
         } else {
             selectedTradeMap.put(bp, Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), BLOCK_KEY)));
-            if (selectedTradeMap.get(bp) != -1) {
+            int selected = selectedTradeMap.get(bp);
+            if (selected >= 0 && selected < getTradesSlots().length && menu.getItemInSlot(getTradesSlots()[selected]) != null) {
                 Utils.enchant(menu.getItemInSlot(getTradesSlots()[selectedTradeMap.get(bp)]));
             }
         }
@@ -254,7 +264,7 @@ public class AutoTrader extends AbstractProcessorMachine implements RecipeDispla
             int tradeIndex = tradesSlots.indexOf(slot);
 
             final BlockPosition bp = new BlockPosition(menu.getLocation());
-            Integer trade = selectedTradeMap.get(bp);
+            int trade = selectedTradeMap.getOrDefault(bp, -1);
 
             // The clicked trade is already selected
             if (tradeIndex == trade) {

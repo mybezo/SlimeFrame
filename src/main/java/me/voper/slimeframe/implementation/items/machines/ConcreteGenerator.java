@@ -89,8 +89,7 @@ public class ConcreteGenerator extends AbstractSelectorMachine implements Recipe
 
     @Override
     protected void onCraftConditionsNotMet(BlockMenu menu) {
-        MachineUtils.replaceExistingItemViewer(menu, getStatusSlot(), new CustomItemStack(Material.BARRIER,
-            ChatColor.RED + "选择需要生产的混凝土！"));
+        MachineUtils.replaceExistingItemViewer(menu, getStatusSlot(), new CustomItemStack(Material.BARRIER, ChatColor.RED + "Select a concrete to generate!"));
     }
 
     @Nonnull

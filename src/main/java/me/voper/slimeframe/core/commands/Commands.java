@@ -66,7 +66,7 @@ public class Commands extends BaseCommand {
         if (onlinePlayer == null) {
             ChatUtils.sendMessage(p, ChatColor.GREEN + "You have " + ChatColor.AQUA + voidTracesOwned + ChatColor.GREEN + " void traces");
         } else {
-            ChatUtils.sendMessage(p, ChatColor.GREEN + "The player " + ChatColor.WHITE + onlinePlayer.getPlayer().getName() + " has " + voidTracesOwned + ChatColor.GREEN + " void traces");
+            ChatUtils.sendMessage(p, ChatColor.GREEN + "The player " + ChatColor.WHITE + onlinePlayer.getPlayer().getName() + " has " + ChatColor.AQUA + voidTracesOwned + ChatColor.GREEN + " void traces");
         }
 
     }

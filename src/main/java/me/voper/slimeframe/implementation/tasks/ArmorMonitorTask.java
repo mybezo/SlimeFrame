@@ -50,7 +50,7 @@ public class ArmorMonitorTask implements Runnable {
                 if (checkAndApplyFreezing(p, item)) break;
             }
         } else if (p.isFrozen()) {
-            p.setFreezeTicks(0);
+            Slimefun.runSync(() -> p.setFreezeTicks(0));
         }
     }
 

@@ -51,9 +51,9 @@ public class CoolantRaknoidsListener implements Listener {
 
         int random = ThreadLocalRandom.current().nextInt(100) + 1;
         if (data.equals(NATURAL)) {
-            if (random < 45) addRaknoid(caveSpider, data);
+            if (random <= 45) addRaknoid(caveSpider, data);
         } else {
-            if (random < 15) addRaknoid(caveSpider, data);
+            if (random <= 15) addRaknoid(caveSpider, data);
         }
 
     }
@@ -95,6 +95,7 @@ public class CoolantRaknoidsListener implements Listener {
         final int amount = PersistentDataAPI.getString(caveSpider, Keys.RAKNOID).equals(NATURAL) ?
                 ThreadLocalRandom.current().nextInt(7) :
                 ThreadLocalRandom.current().nextInt(3);
+        if (amount <= 0) return;
         e.getDrops().add(new SlimefunItemStack(SFrameStacks.COOLANT_CANISTER, amount));
     }
 

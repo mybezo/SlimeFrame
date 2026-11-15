@@ -53,22 +53,10 @@ public class Relic extends SlimefunItem implements NotPlaceable {
 
     private static final SlimeFrame plugin = SlimeFrame.getInstance();
 
-    private static final RecipeType LITH_RECIPE_TYPE = new RecipeType(Keys.createKey("lith_recipe"),
-        new CustomItemStack(Material.FISHING_ROD, ChatColor.AQUA + "钓鱼",
-            ChatColor.WHITE + "每钓到 " + SlimeFrame.getSettingsManager().getInt(SettingsManager.ConfigField.LITH_RELIC) +
-                " 条鱼可获得", ChatColor.WHITE + "一个随机的古纪遗物"));
-    private static final RecipeType MESO_RECIPE_TYPE = new RecipeType(Keys.createKey("meso_recipe"),
-        new CustomItemStack(Material.DIAMOND_SWORD, ChatColor.AQUA + "杀怪",
-            ChatColor.WHITE + "每击杀" + SlimeFrame.getSettingsManager().getInt(SettingsManager.ConfigField.MESO_RELIC) +
-                " 个生物可获得", ChatColor.WHITE + "一个随机的前纪遗物"));
-    private static final RecipeType NEO_RECIPE_TYPE = new RecipeType(Keys.createKey("neo_recipe"),
-        new CustomItemStack(Material.DIAMOND_PICKAXE, ChatColor.AQUA + "挖掘",
-            ChatColor.WHITE + "每挖掘" + SlimeFrame.getSettingsManager().getInt(SettingsManager.ConfigField.NEO_RELIC) +
-                " 个方块可获得", ChatColor.WHITE + "一个随机的中纪遗物"));
-    private static final RecipeType AXI_RECIPE_TYPE = new RecipeType(Keys.createKey("axi_recipe"),
-        new CustomItemStack(Material.BRICKS, ChatColor.AQUA + "建造",
-            ChatColor.WHITE + "每放置" + SlimeFrame.getSettingsManager().getInt(SettingsManager.ConfigField.AXI_RELIC) +
-                " 个方块可获得", ChatColor.WHITE + "一个随机的后纪遗物"));
+    private static final RecipeType LITH_RECIPE_TYPE = new RecipeType(Keys.createKey("lith_recipe"), new CustomItemStack(Material.FISHING_ROD, ChatColor.AQUA + "Go fishing!", ChatColor.WHITE + "One random lith relic", ChatColor.WHITE + "for every " + SlimeFrame.getSettingsManager().getInt(SettingsManager.ConfigField.LITH_RELIC) + " fishes caught!"));
+    private static final RecipeType MESO_RECIPE_TYPE = new RecipeType(Keys.createKey("meso_recipe"), new CustomItemStack(Material.DIAMOND_SWORD, ChatColor.AQUA + "Go killing!", ChatColor.WHITE + "One random meso relic", ChatColor.WHITE + "for every " + SlimeFrame.getSettingsManager().getInt(SettingsManager.ConfigField.MESO_RELIC) + " entities killed!"));
+    private static final RecipeType NEO_RECIPE_TYPE = new RecipeType(Keys.createKey("neo_recipe"), new CustomItemStack(Material.DIAMOND_PICKAXE, ChatColor.AQUA + "Go mining!", ChatColor.WHITE + "One random neo relic", ChatColor.WHITE + "for every " + SlimeFrame.getSettingsManager().getInt(SettingsManager.ConfigField.NEO_RELIC) + " blocks broken!"));
+    private static final RecipeType AXI_RECIPE_TYPE = new RecipeType(Keys.createKey("axi_recipe"), new CustomItemStack(Material.BRICKS, ChatColor.AQUA + "Go building!", ChatColor.WHITE + "One random axi relic", ChatColor.WHITE + "for every " + SlimeFrame.getSettingsManager().getInt(SettingsManager.ConfigField.AXI_RELIC) + " blocks placed!"));
 
     private final Era era;
     private final SlimefunItemStack[] commonDrops;
@@ -139,9 +127,8 @@ public class Relic extends SlimefunItem implements NotPlaceable {
                 p.getWorld().dropItemNaturally(p.getLocation(), relicEvent.getReward());
             }
 
-            ChatUtils.sendMessage(p, ChatColor.GREEN + "已打开遗物！");
-            ChatUtils.sendMessage(p, ChatColor.GREEN + "你获得了 " + ChatColor.WHITE + voidTracesReward + ChatColor.GREEN +
-                " 虚空光体！");
+            ChatUtils.sendMessage(p, ChatColor.GREEN + "Relic opened!");
+            ChatUtils.sendMessage(p, ChatColor.GREEN + "You have just received " + ChatColor.WHITE + relicEvent.getVoidTracesReward() + ChatColor.GREEN + " void traces for opening this relic!");
 
         };
     }
@@ -156,7 +143,7 @@ public class Relic extends SlimefunItem implements NotPlaceable {
 
         int tracesRequired = refinement.getTracesRequired() - getRefinement(relic).getTracesRequired();
         if (tracesRequired <= 0) {
-            ChatUtils.sendMessage(p, ChatColor.RED + "你不能精炼至更低的等级！");
+            ChatUtils.sendMessage(p, ChatColor.RED + "You can not refine your relic to a lower refinement level");
             return;
         }
 
@@ -169,13 +156,12 @@ public class Relic extends SlimefunItem implements NotPlaceable {
 
         if (tracesOwned < tracesRequired) {
             ChatUtils.sendMessage(p,
-                    ChatColor.RED + "你没有足够的虚空光体来精炼该遗物！",
-                    ChatColor.RED + "需要：" + Colors.ORANGE + tracesRequired);
+                    ChatColor.RED + "You do not have enough void traces to refine this relic",
+                    ChatColor.RED + "Amount of void traces needed: " + Colors.ORANGE + tracesRequired);
             return;
         }
 
-        ChatUtils.sendMessage(p,
-            ChatColor.GREEN + "遗物已精炼至 " + ChatColor.WHITE + refinement.getDisplayName());
+        ChatUtils.sendMessage(p, ChatColor.GREEN + "Relic successfully refined to " + ChatColor.WHITE + refinement.name());
         PersistentDataAPI.set(p, Keys.VOID_TRACES_OWNED, PersistentDataType.INTEGER, tracesOwned - tracesRequired);
 
         setRefinement(relic, refinement);
@@ -221,7 +207,7 @@ public class Relic extends SlimefunItem implements NotPlaceable {
 
         if (reactants == 10) {
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-            ChatUtils.sendMessage(player, ChatColor.GREEN + "你的遗物已经准备好打开了！");
+            ChatUtils.sendMessage(player, ChatColor.GREEN + "Your relic is ready to be opened!");
         }
 
     }
@@ -252,12 +238,11 @@ public class Relic extends SlimefunItem implements NotPlaceable {
     @Getter
     @AllArgsConstructor
     public enum Refinement {
-        INTACT("完整", 76, 22, 2, 0),
-        EXCEPTIONAL("优良", 70, 26, 4, 25),
-        FLAWLESS("无暇", 60, 34, 6, 50),
-        RADIANT("光辉", 50, 40, 10, 100);
+        INTACT(76, 22, 2, 0),
+        EXCEPTIONAL(70, 26, 4, 25),
+        FLAWLESS(60, 34, 6, 50),
+        RADIANT(50, 40, 10, 100);
 
-        private final String displayName;
         private final int commonProbability;
         private final int uncommonProbability;
         private final int rareProbability;

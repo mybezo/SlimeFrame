@@ -27,7 +27,6 @@ import me.voper.slimeframe.utils.Keys;
 import me.voper.slimeframe.utils.Utils;
 
 import lombok.Getter;
-import net.guizhanss.guizhanlib.minecraft.helper.MaterialHelper;
 import net.md_5.bungee.api.ChatColor;
 
 // An item dropped by mobs. The probability of an item dropping from a mob can vary depending on the mob
@@ -96,7 +95,7 @@ public class MobDropItem extends SlimefunItem implements AdvancedMobDrop, Recipe
     @Nonnull
     @Override
     public String getRecipeSectionLabel(@Nonnull Player p) {
-        return "&7⇩ 该物品由以下生物掉落 ⇩";
+        return "&7⇩ This item is dropped by the following mobs ⇩";
     }
 
     @Nonnull
@@ -106,11 +105,10 @@ public class MobDropItem extends SlimefunItem implements AdvancedMobDrop, Recipe
         mobChanceMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
                 .forEach(entry -> {
-                    recipes.add(new CustomItemStack(Material.PAPER,
-                        ChatColor.WHITE + "掉落几率: " + ChatColor.AQUA + entry.getValue() + "%"));
+                    recipes.add(new CustomItemStack(Material.PAPER, ChatColor.WHITE + "Drop chance: " + ChatColor.AQUA + entry.getValue() + "%"));
                     Material material = Material.getMaterial(entry.getKey().name() + "_SPAWN_EGG");
                     if (material != null) {
-                        CustomItemStack spawnEgg = new CustomItemStack(material, MaterialHelper.getName(material));
+                        CustomItemStack spawnEgg = new CustomItemStack(material, Utils.formatMaterialString(material).replaceAll("Spawn Egg", " ").trim());
                         recipes.add(spawnEgg);
                     }
                 });

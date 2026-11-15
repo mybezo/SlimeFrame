@@ -93,7 +93,7 @@ public class Foundry extends MultiBlockMachine {
             // craftItem(inv, recipe, p, b);
             dispenser.getWorld().dropItem(b.getLocation(), output);
             Slimefun.getLocalization().sendMessage(p, "machines.full-inventory", true);
-            p.sendMessage("&d合成的物品已掉落在地上！");
+            p.sendMessage("&dCrafted item has been dropped instead");
         }
     }
 

@@ -115,7 +115,7 @@ public class VillagerTradeListener implements Listener {
         specialOreDistribution = new EnumeratedDistribution<>(specialOresProbabilities);
 
         ingredientsPool = new ArrayList<>(Slimefun.getRegistry().getAllSlimefunItems().stream()
-                .filter(item -> ChatColor.stripColor(item.getItemName()).contains("古代符文"))
+                .filter(item -> ChatColor.stripColor(item.getItemName()).contains("Ancient Rune"))
                 .map(SlimefunItem::getItem)
                 .toList());
 

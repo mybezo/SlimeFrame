@@ -47,14 +47,10 @@ public class ItemProjector extends AbstractTickingContainer {
     private static final Map<BlockPosition, ItemStack> HOLOGRAM_MAP = new HashMap<>();
     private static final Map<BlockPosition, BukkitTask> SPINNING_TASK_MAP = new HashMap<>();
 
-    private static final ItemStack INCREMENT_HEIGHT =
-        new CustomItemStack(PlayerHead.getItemStack(PlayerSkin.fromBase64(HeadTextures.GRAY_PLUS)), ChatColor.AQUA +
-            "点击增加高度");
-    private static final ItemStack DECREMENT_HEIGHT =
-        new CustomItemStack(PlayerHead.getItemStack(PlayerSkin.fromBase64(HeadTextures.GRAY_MINUS)),
-            ChatColor.AQUA + "点击减少高度");
-    private static final ItemStack SPIN = new CustomItemStack(Material.MUSIC_DISC_5, ChatColor.AQUA + "点击切换物品旋转");
-    private static final ItemStack SIZE = new CustomItemStack(Material.BONE_MEAL, ChatColor.AQUA + "点击增加/减小物品大小");
+    private static final ItemStack INCREMENT_HEIGHT = new CustomItemStack(PlayerHead.getItemStack(PlayerSkin.fromBase64(HeadTextures.GRAY_PLUS)), ChatColor.AQUA + "Click to increment the height");
+    private static final ItemStack DECREMENT_HEIGHT = new CustomItemStack(PlayerHead.getItemStack(PlayerSkin.fromBase64(HeadTextures.GRAY_MINUS)), ChatColor.AQUA + "Click to decrement the height");
+    private static final ItemStack SPIN = new CustomItemStack(Material.MUSIC_DISC_5, ChatColor.AQUA + "Click to start/stop spinning");
+    private static final ItemStack SIZE = new CustomItemStack(Material.BONE_MEAL, ChatColor.AQUA + "Click to increase/decrease the size");
 
     private static final String OFFSET_KEY = "offset";
     private static final String SPINNING_KEY = "spinning";
@@ -114,29 +110,16 @@ public class ItemProjector extends AbstractTickingContainer {
             IS_SPINNING_MAP.put(bp, isSpinning);
         }
 
+        // Restore the spinning animation after a restart / chunk reload
+        if (Boolean.TRUE.equals(IS_SPINNING_MAP.get(bp))) {
+            setSpinning(b, bp, true);
+        }
+
         menu.addMenuClickHandler(getSpinSlot(), (player, i, itemStack, clickAction) -> {
-            Boolean isSpinning = !IS_SPINNING_MAP.get(bp);
+            boolean isSpinning = !IS_SPINNING_MAP.getOrDefault(bp, false);
             IS_SPINNING_MAP.put(bp, isSpinning);
-            BlockStorage.addBlockInfo(b, SPINNING_KEY, isSpinning.toString());
-
-            BukkitTask spinningTask = SPINNING_TASK_MAP.get(bp);
-            if (isSpinning) {
-                if (spinningTask == null || spinningTask.isCancelled()) {
-                    spinningTask = new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            ArmorStand armorStand = getArmorStand(b, true);
-                            armorStand.setRotation(armorStand.getLocation().getYaw() + 25f, armorStand.getLocation().getPitch() + 25f);
-                        }
-                    }.runTaskTimer(SlimeFrame.getInstance(), 0L, 5L);
-                }
-            } else {
-                if (spinningTask != null && !spinningTask.isCancelled()) {
-                    spinningTask.cancel();
-                }
-            }
-
-            SPINNING_TASK_MAP.put(bp, spinningTask);
+            BlockStorage.addBlockInfo(b, SPINNING_KEY, Boolean.toString(isSpinning));
+            setSpinning(b, bp, isSpinning);
             return false;
         });
 
@@ -152,6 +135,32 @@ public class ItemProjector extends AbstractTickingContainer {
         menu.addMenuClickHandler(getDecrementHeightSlot(), (p, i, itemStack, clickAction) -> addHeight(b, -0.1F));
 
         HOLOGRAM_MAP.put(bp, menu.getItemInSlot(getItemSlot()));
+    }
+
+    private static void setSpinning(Block b, BlockPosition bp, boolean spinning) {
+        BukkitTask spinningTask = SPINNING_TASK_MAP.get(bp);
+        if (spinning) {
+            if (spinningTask == null || spinningTask.isCancelled()) {
+                spinningTask = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        // Stop the task if the projector was removed
+                        if (!BlockStorage.hasBlockInfo(b) || BlockStorage.getLocationInfo(b.getLocation(), OFFSET_KEY) == null) {
+                            cancel();
+                            return;
+                        }
+                        if (!b.getWorld().isChunkLoaded(b.getX() >> 4, b.getZ() >> 4)) return;
+                        ArmorStand armorStand = getArmorStand(b, true);
+                        if (armorStand == null) return;
+                        armorStand.setRotation(armorStand.getLocation().getYaw() + 25f, armorStand.getLocation().getPitch() + 25f);
+                    }
+                }.runTaskTimer(SlimeFrame.getInstance(), 0L, 5L);
+            }
+        } else if (spinningTask != null && !spinningTask.isCancelled()) {
+            spinningTask.cancel();
+        }
+
+        SPINNING_TASK_MAP.put(bp, spinningTask);
     }
 
     private boolean addHeight(Block b, float value) {
@@ -207,6 +216,12 @@ public class ItemProjector extends AbstractTickingContainer {
         if (hologram != null) {
             hologram.remove();
         }
+    }
+
+    // The ticker reads and spawns entities, which must happen on the main thread
+    @Override
+    protected boolean synchronous() {
+        return true;
     }
 
     @Override

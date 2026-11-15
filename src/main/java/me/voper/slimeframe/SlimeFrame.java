@@ -2,7 +2,6 @@ package me.voper.slimeframe;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,8 +24,8 @@ import me.voper.slimeframe.implementation.listeners.*;
 import me.voper.slimeframe.implementation.researches.Researches;
 import me.voper.slimeframe.implementation.tasks.ArmorMonitorTask;
 import me.voper.slimeframe.implementation.tasks.CoolantRaknoidsTask;
-import net.guizhanss.guizhanlib.updater.UpdaterConfig;
-import net.guizhanss.guizhanlibplugin.updater.GuizhanUpdater;
+import me.voper.slimeframe.utils.AutoUpdater;
+
 import org.bstats.bukkit.Metrics;
 import org.geysermc.geyser.api.GeyserApi;
 
@@ -52,13 +51,6 @@ public class SlimeFrame extends JavaPlugin implements SlimefunAddon {
         instance = this;
         saveDefaultConfig();
 
-        if (!getServer().getPluginManager().isPluginEnabled("GuizhanLibPlugin")) {
-            getLogger().log(Level.SEVERE, "本插件需要 鬼斩前置库插件(GuizhanLibPlugin) 才能运行!");
-            getLogger().log(Level.SEVERE, "从此处下载: https://50l.cc/gzlib");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-
         new Metrics(this, 19212);
 
         this.supportedPluginManager = new SupportedPluginManager();
@@ -82,11 +74,9 @@ public class SlimeFrame extends JavaPlugin implements SlimefunAddon {
         this.startTasks();
         this.logStart();
 
-        if (getPluginVersion().startsWith("Build")) {
-            UpdaterConfig updaterConfig =
-                UpdaterConfig.builder().checkOnly(!settingsManager.getBoolean(SettingsManager.ConfigField.AUTO_UPDATE)).build();
-            GuizhanUpdater.start(this, getFile(), "SlimefunGuguProject", "SlimeFrame", "main", updaterConfig);
-        }
+        AutoUpdater autoUpdater = new AutoUpdater(this, this.getFile());
+        new Thread(autoUpdater).start();
+
     }
 
     @Override
@@ -107,7 +97,7 @@ public class SlimeFrame extends JavaPlugin implements SlimefunAddon {
 
     @Override
     public String getBugTrackerURL() {
-        return "https://github.com/SlimefunGuguProject/SlimeFrame/issues";
+        return "https://github.com/VoperAD/SlimeFrame/issues";
     }
 
     @Nonnull

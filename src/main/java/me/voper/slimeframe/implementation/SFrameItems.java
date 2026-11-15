@@ -176,7 +176,7 @@ public final class SFrameItems {
         }).register(plugin);
 
         new Resource(SFrameStacks.SALVAGE, Recycler.RECIPE_TYPE, new ItemStack[]{
-                null, null, null, null, new CustomItemStack(Material.FURNACE, ChatColor.AQUA + "任何机器或发电机")
+                null, null, null, null, new CustomItemStack(Material.FURNACE, ChatColor.AQUA + "Any Machine or Generator")
         }, new SlimefunItemStack(SFrameStacks.SALVAGE, 8)).register(plugin);
 
         new Resource(SFrameStacks.PRISMATIC_ENERGIZED_CORE, new ItemStack[]{
@@ -679,8 +679,8 @@ public final class SFrameItems {
                 itemStack.getItemId() + "_PLATE",
                 Material.PAPER,
                 SFrameStacks.RESOURCES_THEME,
-                itemStack.getDisplayName() + "板",
-                "由" + itemStack.getDisplayName() + ChatColor.GRAY + "制成的板"
+                itemStack.getDisplayName() + " Plate",
+                "A plate made of " + itemStack.getDisplayName()
         );
 
         SlimefunItem slimefunItem = new SlimefunItem(Groups.RESOURCES, alloyPlate, RecipeType.ENHANCED_CRAFTING_TABLE, recipe);

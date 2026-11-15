@@ -11,7 +11,6 @@ softdepend:
   - PlaceholderAPI
   - SlimeHUD
   - Geyser-Spigot
-  - GuizhanLibPlugin
 permissions:
   slimeframe.anyone.refine:
     description: Can refine a SlimeFrame relic

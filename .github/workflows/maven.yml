@@ -21,3 +21,9 @@ jobs:
           cache: 'maven'
       - name: Build with Maven
         run: mvn package --file pom.xml
+      - name: Upload plugin JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: SlimeFrame
+          path: target/SlimeFrame-*.jar
+          if-no-files-found: error

@@ -45,7 +45,7 @@ public final class RelicsListener implements Listener {
 
         int fishesCaught = PersistentDataAPI.getInt(p, Keys.FISHERIES_COUNTER, 0) + 1;
 
-        if (fishesCaught % settings.getInt(SettingsManager.ConfigField.LITH_RELIC) == 0) {
+        if (fishesCaught % getThreshold(SettingsManager.ConfigField.LITH_RELIC) == 0) {
             fishesCaught = 0;
             giveRelic(p, Relic.Era.LITH);
         }
@@ -66,13 +66,13 @@ public final class RelicsListener implements Listener {
                 // Support for bedrock players
                 boolean isBedrockPlayer = SlimeFrame.getGeyserApi() != null && SlimeFrame.getGeyserApi().isBedrockPlayer(killer.getUniqueId());
                 ItemStack relic = isBedrockPlayer ? killer.getInventory().getItem(0) : killer.getInventory().getItemInOffHand();
-                String slot = isBedrockPlayer ? "第一格快捷栏" : "副手";
+                String slot = isBedrockPlayer ? "first slot" : "off hand";
 
                 SlimefunItem sfItem = SlimefunItem.getByItem(relic);
                 if (sfItem instanceof Relic) {
                     if (relic.getAmount() > 1) {
-                        ChatUtils.sendMessage(killer, ChatColor.RED + "无法获取反应物！",
-                                ChatColor.RED + "确保你的" + slot + "仅有1个遗物！");
+                        ChatUtils.sendMessage(killer, ChatColor.RED + "It wasn't possible to deliver a reactant to you",
+                                ChatColor.RED + "Make sure that you only have one relic in your " + slot);
                     } else {
                         Relic.incrementReactants(killer, relic);
                     }
@@ -82,7 +82,7 @@ public final class RelicsListener implements Listener {
 
         int kills = PersistentDataAPI.getInt(killer, Keys.KILL_COUNTER, 0) + 1;
 
-        if (kills % settings.getInt(SettingsManager.ConfigField.MESO_RELIC) == 0) {
+        if (kills % getThreshold(SettingsManager.ConfigField.MESO_RELIC) == 0) {
             kills = 0;
             giveRelic(killer, Relic.Era.MESO);
         }
@@ -95,7 +95,7 @@ public final class RelicsListener implements Listener {
         Player p = e.getPlayer();
         int blocksBroken = PersistentDataAPI.getInt(p, Keys.BLOCKS_BROKEN_COUNTER, 0) + 1;
 
-        if (blocksBroken % settings.getInt(SettingsManager.ConfigField.NEO_RELIC) == 0) {
+        if (blocksBroken % getThreshold(SettingsManager.ConfigField.NEO_RELIC) == 0) {
             blocksBroken = 0;
             giveRelic(p, Relic.Era.NEO);
         }
@@ -109,12 +109,17 @@ public final class RelicsListener implements Listener {
 
         int blocksPlaced = PersistentDataAPI.getInt(p, Keys.BLOCKS_PLACED_COUNTER, 0) + 1;
 
-        if (blocksPlaced % settings.getInt(SettingsManager.ConfigField.AXI_RELIC) == 0) {
+        if (blocksPlaced % getThreshold(SettingsManager.ConfigField.AXI_RELIC) == 0) {
             blocksPlaced = 0;
             giveRelic(p, Relic.Era.AXI);
         }
 
         PersistentDataAPI.setInt(p, Keys.BLOCKS_PLACED_COUNTER, blocksPlaced);
+    }
+
+    // Guards against a zero/negative value in the config, which would cause a division by zero
+    private static int getThreshold(SettingsManager.ConfigField field) {
+        return Math.max(1, settings.getInt(field));
     }
 
     private void giveRelic(Player player, Relic.Era era) {

@@ -3,12 +3,16 @@ package me.voper.slimeframe.utils;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import me.voper.slimeframe.SlimeFrame;
@@ -29,6 +33,8 @@ public final class AutoUpdater implements Runnable {
     private final File updateFolder;
     private final File pluginFile;
     private final String userAgent;
+
+    private static final int TIMEOUT_MS = 10_000;
 
     private boolean isMajorUpdate = false;
 
@@ -81,20 +87,24 @@ public final class AutoUpdater implements Runnable {
         logger.warning("There is a new MAJOR version of SlimeFrame available!");
         logger.warning("Download it here: " + RELEASES);
         logger.warning("Check the changelog for more information: " + CHANGELOG);
-        plugin.getServer().getPluginManager().registerEvents(new WarnOperatorsListener(plugin, version), plugin);
+        // This runs on a separate thread, listeners must be registered on the main thread
+        plugin.getServer().getScheduler().runTask(plugin, () ->
+                plugin.getServer().getPluginManager().registerEvents(new WarnOperatorsListener(plugin, version), plugin));
     }
 
     private @Nullable Release getLatestRelease() {
         try {
             URL url = new URL(LATEST_RELEASE);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
+            urlConnection.setConnectTimeout(TIMEOUT_MS);
+            urlConnection.setReadTimeout(TIMEOUT_MS);
             urlConnection.addRequestProperty("User-Agent", userAgent);
-            InputStream inputStream = urlConnection.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            urlConnection.addRequestProperty("Accept", "application/vnd.github+json");
 
-            JsonElement jsonElement = JsonParser.parseReader(inputStreamReader);
-            return new Release(jsonElement);
+            try (InputStreamReader reader = new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8)) {
+                JsonElement jsonElement = JsonParser.parseReader(reader);
+                return new Release(jsonElement);
+            }
         } catch (Exception e) {
             plugin.getLogger().severe("Failed to check for updates: " + e.getMessage());
         }
@@ -105,8 +115,8 @@ public final class AutoUpdater implements Runnable {
         ComparableVersion latestVersion = new ComparableVersion(latest);
         ComparableVersion currentVersion = new ComparableVersion(plugin.getDescription().getVersion());
 
-        int latestMajor = Integer.parseInt(latestVersion.getCanonical().substring(0, 1));
-        int currentMajor = Integer.parseInt(currentVersion.getCanonical().substring(0, 1));
+        int latestMajor = parseMajor(latest);
+        int currentMajor = parseMajor(plugin.getDescription().getVersion());
         if (latestMajor > currentMajor) {
             isMajorUpdate = true;
             return true;
@@ -115,30 +125,47 @@ public final class AutoUpdater implements Runnable {
         return latestVersion.compareTo(currentVersion) > 0;
     }
 
+    // Reads the leading number of a version string ("1.7.0" -> 1, "v12.0" -> 12)
+    private static int parseMajor(String version) {
+        String digits = version.replaceFirst("^[^0-9]*", "").replaceFirst("[^0-9].*$", "");
+        try {
+            return digits.isEmpty() ? 0 : Integer.parseInt(digits);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
     private void downloadUpdate(String downloadUrl) {
-        BufferedInputStream in = null;
-        FileOutputStream fout = null;
+        if (!updateFolder.exists() && !updateFolder.mkdirs()) {
+            plugin.getLogger().severe("Failed to create the update folder: " + updateFolder.getAbsolutePath());
+            return;
+        }
+
+        File target = new File(updateFolder, pluginFile.getName());
+        // Download to a temporary file first, so a failed download never leaves a corrupt jar behind
+        File temp = new File(updateFolder, pluginFile.getName() + ".part");
 
         try {
-            URL url = new URL(downloadUrl);
-            in = new BufferedInputStream(url.openStream());
-            fout = new FileOutputStream(new File(updateFolder, pluginFile.getName()));
+            HttpURLConnection connection = (HttpURLConnection) new URL(downloadUrl).openConnection();
+            connection.setConnectTimeout(TIMEOUT_MS);
+            connection.setReadTimeout(TIMEOUT_MS);
+            connection.addRequestProperty("User-Agent", userAgent);
 
-            final byte[] data = new byte[4096];
-            int count;
-            while ((count = in.read(data, 0, 4096)) != -1) {
-                fout.write(data, 0, count);
+            try (BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
+                 FileOutputStream out = new FileOutputStream(temp)) {
+                final byte[] data = new byte[4096];
+                int count;
+                while ((count = in.read(data, 0, data.length)) != -1) {
+                    out.write(data, 0, count);
+                }
             }
 
+            Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            info("The update has been downloaded and will be installed on the next restart");
         } catch (Exception e) {
             plugin.getLogger().severe("Failed to download update: " + e.getMessage());
-        } finally {
-            try {
-                if (fout != null) {
-                    fout.close();
-                }
-            } catch (IOException e) {
-                plugin.getLogger().severe("Failed to close file output stream: " + e.getMessage());
+            if (temp.exists() && !temp.delete()) {
+                temp.deleteOnExit();
             }
         }
     }
@@ -154,8 +181,21 @@ public final class AutoUpdater implements Runnable {
         private final String jarName;
 
         public Release(@Nonnull JsonElement element) {
-            this.tagName = element.getAsJsonObject().get("tag_name").getAsString();
-            this.jarName = element.getAsJsonObject().get("assets").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString();
+            JsonObject release = element.getAsJsonObject();
+            this.tagName = release.has("tag_name") ? release.get("tag_name").getAsString() : null;
+
+            String jar = null;
+            if (release.has("assets")) {
+                // Pick the first .jar asset instead of blindly taking the first asset
+                for (JsonElement asset : release.getAsJsonArray("assets")) {
+                    String name = asset.getAsJsonObject().get("name").getAsString();
+                    if (name.endsWith(".jar")) {
+                        jar = name;
+                        break;
+                    }
+                }
+            }
+            this.jarName = jar;
         }
 
         @Nonnull
@@ -165,7 +205,7 @@ public final class AutoUpdater implements Runnable {
 
         @Nonnull
         public String getCleanVersion() {
-            return tagName.replace("v", "");
+            return tagName.startsWith("v") ? tagName.substring(1) : tagName;
         }
 
         public boolean isValid() {

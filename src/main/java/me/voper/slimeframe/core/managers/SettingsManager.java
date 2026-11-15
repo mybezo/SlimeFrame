@@ -2,6 +2,7 @@ package me.voper.slimeframe.core.managers;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -47,10 +48,20 @@ public final class SettingsManager {
 
     public Map<EntityType, Integer> getDropChanceMap(@Nonnull ConfigField field) {
         ConfigurationSection configurationSection = config.getConfigurationSection(field.path);
+        if (configurationSection == null) {
+            return (Map<EntityType, Integer>) field.defaultValue;
+        }
+
         Map<EntityType, Integer> dropChanceMap = new HashMap<>();
 
         for (String key : configurationSection.getKeys(false)) {
-            EntityType entityType = EntityType.valueOf(key.toUpperCase());
+            EntityType entityType;
+            try {
+                entityType = EntityType.valueOf(key.toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().log(Level.WARNING, "Unknown entity type \"" + key + "\" in " + field.path + ". This entry will be ignored.");
+                continue;
+            }
             int percentage = configurationSection.getInt(key);
             if (percentage > 100 || percentage < 0) {
                 String warning = "The value for " + field.path + "." + entityType.name() + " must be in the range 0 - 100. The default values and entities will be used until this error is fixed.";

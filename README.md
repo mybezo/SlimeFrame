@@ -1,92 +1,206 @@
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/VoperAD/SlimeFrame/blob/main/README.md)
-[![pt-br](https://img.shields.io/badge/lang-pt--br-green.svg)](https://github.com/VoperAD/SlimeFrame/blob/main/README.pt-br.md)
-
-
 <div align="center">
-  <img src="https://github.com/VoperAD/SlimeFrame/raw/main/images/SFrame-Banner.png" alt="SlimeFrame-Banner_2" width="1280" height="500">
+
+<img src="images/SFrame-Banner.png" alt="SlimeFrame banner" width="100%">
+
+# SlimeFrame
+
+**A Warframe-inspired addon for [Slimefun 4](https://github.com/Slimefun/Slimefun4): relics, Prime machines, stackable generators, and villager trade automation.**
+
+[![Java CI](https://github.com/mybezo/SlimeFrame/actions/workflows/maven.yml/badge.svg)](https://github.com/mybezo/SlimeFrame/actions/workflows/maven.yml)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.19%2B-brightgreen)](#requirements)
+[![Slimefun](https://img.shields.io/badge/Slimefun-RC--34%2B-orange)](https://github.com/Slimefun/Slimefun4)
+[![License](https://img.shields.io/github/license/mybezo/SlimeFrame)](LICENSE)
+
+[![en](https://img.shields.io/badge/lang-en-red.svg)](README.md)
+[![pt-br](https://img.shields.io/badge/lang-pt--br-green.svg)](README.pt-br.md)
+
 </div>
 
-## 下载
+---
 
-[下载 SlimeFrame](https://resources.guizhanss.com/plugin/SlimeFrame)
+<details>
+  <summary><b>Table of Contents</b></summary>
 
-## 关于本附属
+- [About](#about)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Commands & Permissions](#commands--permissions)
+- [Gameplay Guide](#gameplay-guide)
+  - [New Resources](#new-resources)
+  - [Relics](#relics)
+  - [Cumulative Generators](#cumulative-generators)
+  - [Auto Trader](#auto-trader)
+- [Configuration](#configuration)
+- [Building from Source](#building-from-source)
+- [Contributing](#contributing)
+- [Credits](#credits)
+- [License](#license)
 
-SlimeFrame（粘液战甲）是一个受到 WarFrame 启发的 Slimefun 附属，添加了新的机器、发电机以及其他的物品，能让你的游戏体验变得更加丰富。  
-添加的物品有：
-- 自动交易机：可以自动化村民交易
-- 物品投影仪：可以展示物品投影
-- 混凝土/羊毛生成器
+</details>
 
-花一点时间来发掘更多的内容！
+## About
 
-## 需求
+SlimeFrame is a Slimefun addon inspired by **Warframe**. It adds new machines, energy generators, tools, armor and a full relic system to make your Slimefun progression more rewarding.
 
-Minecraft 版本：1.19+  
-Slimefun 版本：RC-34+
+Among other things you get an **Auto Trader** that trades with villagers automatically, an **Item Projector** that displays any item as a hologram, concrete/wool/glass/terracotta generators, a **Chunk Eater**, and much more. Take your time and explore!
 
-## 指令
+## Features
 
-|              指令               |             权限              |       说明        |
-|:-----------------------------:|:---------------------------:|:---------------:|
-|               -               |     slimeframe.anyone.*     | 允许使用 _访问其他人_ 指令 |
-|        /sframe relics         | slimeframe.anyone.inventory |    打开自己的遗物背包    |
-| /sframe refine \<refinement\> |  slimeframe.anyone.refine   |     精炼手持的遗物     |
-|    /sframe traces [player]    |  slimeframe.anyone.traces   |   显示拥有多少虚空光体    |
-|               -               |     slimeframe.admin.*      |  允许使用 _管理员_ 指令  |
-|   /sframe invsee \<player\>   |   slimeframe.admin.invsee   |   打开指定玩家的遗物背包   |
+| | |
+|---|---|
+| 🏺 **Relics** | Earn relics by fishing, fighting, mining and building, then open them for Prime Components. |
+| ⚙️ **Prime machines** | Late-game machine tiers crafted with Prime Components. |
+| ⚡ **Cumulative generators** | Generators that produce more energy the more of them you stack together. |
+| 🤝 **Auto Trader** | Bind a villager's trades to a contract and automate them. |
+| ⛏️ **Special ores** | New resources mined from vanilla ores with the Nosam Pickaxe. |
+| ❄️ **Cryogenic gear** | Freezing items and the armor that protects you from them. |
+| 🖼️ **Item Projector** | Show off any item as a spinning, resizable hologram. |
 
-## 这个附属有什么？
+## Requirements
 
-### 新资源
+| Requirement | Version |
+|---|---|
+| Server software | **Spigot**, **Paper** or a fork (e.g. **Purpur**) |
+| Minecraft | **1.19+** (includes compatibility fixes for 1.21 – 26.2) |
+| Java | **17+** (Minecraft 1.20.5+ requires **Java 21+**) |
+| Slimefun | **RC-34+** |
 
-有很多新资源用于制作新的机器和发电机。其中一些是通过使用诺萨姆切割器在 Minecraft 矿石上采矿获得的新矿石。**放置的方块不会掉落这些矿石**。
+Optional integrations: **Geyser** (Bedrock player support), **SlimeHUD**, **PlaceholderAPI**, **AdvancedEnchantments**.
 
-### 遗物
+## Installation
 
-遗物是用于获取 Prime 组件的物品，而这些组件是制作 Prime 机器所必需的。每个遗物都有3个铜奖励、2个银奖励和1个金奖励（普通、罕见和稀有）。共有四种类型的遗物：
+1. Download the latest `SlimeFrame-vX.Y.Z.jar`:
+   - from the [**Actions**](https://github.com/mybezo/SlimeFrame/actions/workflows/maven.yml) tab (open the latest successful run and download the `SlimeFrame` artifact), or
+   - by [building it yourself](#building-from-source).
+2. Make sure [Slimefun](https://github.com/Slimefun/Slimefun4) is installed.
+3. Drop the JAR into your server's `plugins/` folder.
+4. Restart the server. A default `plugins/SlimeFrame/config.yml` will be generated.
 
-- 古纪（Lith）：捕获50条鱼获得。
-- 前纪（Meso）：消灭750个实体获得。
-- 中纪（Neo）：破坏10000个方块获得。
-- 后纪（Axi）：放置750个方块获得。
+## Commands & Permissions
 
-使用命令`/sframe relics`来查看你的遗物库存。
-服主可以在配置文件中修改这些数量。
+The root command is `/sframe` (aliases: `/slimeframe`, `/wf`). Aliases can be changed in `config.yml`.
 
-#### 如何打开遗物？
+| Command | Permission | Description |
+|---|---|---|
+| — | `slimeframe.anyone.*` | Grants every _player_ command (default: everyone) |
+| `/sframe relics` | `slimeframe.anyone.inventory` | Open your relic inventory |
+| `/sframe refine <refinement>` | `slimeframe.anyone.refine` | Refine the relic in your main hand |
+| `/sframe traces [player]` | `slimeframe.anyone.traces` | Show how many Void Traces you (or a player) have |
+| — | `slimeframe.admin.*` | Grants every _admin_ command (default: op) |
+| `/sframe invsee <player>` | `slimeframe.admin.invsee` | Open another player's relic inventory |
 
-遗物有两个在描述中显示的属性：反应物和精炼度。要打开遗物，你必须用10个反应物填充它。要获得反应物，将**一个**遗物放在副手，并杀死末影人直到它被填满。每杀死一个末影人，有25%的几率获得一个反应物。当达到10个反应物时，只需右键点击手中的遗物，它将打开并给予你奖励。
+## Gameplay Guide
 
-***基岩版玩家：*** 如果你是基岩版玩家，你必须将遗物放在快捷栏的第一个槽位中（这是实验性的并且仍在测试中，所以如果有任何问题，请进行报告）。
+### New Resources
 
-#### 遗物精炼
+Many new resources are used to craft the addon's machines and generators. Some of them are **special ores** that can only be obtained by mining vanilla ores with a **Nosam Pickaxe**.
 
-遗物可以精炼以增加获得更稀有奖励的几率。要精炼遗物，使用命令`/sframe refine <精炼等级（英文）>`。要精炼遗物，你需要**虚空光体**，每次打开遗物都会得到1到20个随机数量的虚空光体。要检查你有多少虚空光体，请使用命令`/sframe traces`。共有四种精炼：
+> [!NOTE]
+> Blocks placed by players never drop special ores.
 
-- 完整（INTACT）：默认精炼。
-- 优良（EXCEPTIONAL）：需要25个虚空光体。
-- 无暇（FLAWLESS）：需要50个虚空光体。
-- 光辉（RADIANT）：需要100个虚空光体。
+### Relics
 
-### 叠加式发电机
+Relics contain **Prime Components**, which are needed to craft Prime-tier machines, the best machines in the addon. Each relic has **3 Bronze** (common), **2 Silver** (uncommon) and **1 Gold** (rare) reward.
 
-一种新型的能量发电机，它会检查其旁边、上方或下方的方块是否也是叠加式发电机。对于每个检测到的叠加式发电机，将会增加一定量的能量，该能量由发电机描述中的新属性**奖励能量**指示。
-**注意：** 不会计算对角线方向的方块。这意味着叠加式能量发电机将检查总共6个方块（每个侧面1个，上方1个，下方1个）。
+There are four relic eras, each earned through a different activity:
 
-### 自动交易机
+| Era | How to obtain (default) |
+|---|---|
+| **Lith** | Every **50** fish caught |
+| **Meso** | Every **750** entities killed |
+| **Neo** | Every **10,000** blocks broken |
+| **Axi** | Every **750** blocks placed |
 
-一种可以自动与村民交易的新机器。要使其工作，你需要一份***商人灵魂契约***。获得契约后，选择一个村民并用手中的契约右键点击它。它将杀死该村民并将其交易填入契约中。之后，将契约放入自动交易机并选择其中一项交易。
+Relics are delivered to a personal **relic inventory**; open it with `/sframe relics`.
 
-**自动化新矿石的农场：** 该机器可用于自动生产使用诺萨姆切割器获取的新矿石。每当村民获得新的交易时，它有很小的几率提供附加组件中的新资源之一。在这种情况下，再次使用商人灵魂契约并使用自动交易机与这份新契约进行交易。
+#### Opening a Relic
 
+A relic's lore shows two attributes: **Reactants** and **Refinement**.
+
+1. Take **one** relic out of your relic inventory and hold it in your **off hand**.
+2. Kill Endermen. Each kill has a **25%** chance to add one reactant.
+3. Once the relic reaches **10/10** reactants, right-click it to open it and receive your reward.
+
+> [!TIP]
+> **Bedrock players (via Geyser):** put the relic in the **first hotbar slot** instead of the off hand. This feature is experimental, so please report any issues.
+
+#### Refining a Relic
+
+Refining a relic increases the chance of getting the rarer rewards. Use `/sframe refine <refinement>` with the relic in your main hand. Refining costs **Void Traces**: every opened relic gives you 1–20 of them. Check your balance with `/sframe traces`.
+
+| Refinement | Cost | Effect |
+|---|---|---|
+| `INTACT` | — | Default refinement |
+| `EXCEPTIONAL` | 25 traces | Better uncommon/rare odds |
+| `FLAWLESS` | 50 traces | Even better odds |
+| `RADIANT` | 100 traces | Best odds for the rare reward |
+
+When upgrading, you only pay the difference between the current and the new refinement.
+
+### Cumulative Generators
+
+Cumulative generators check the six blocks directly next to them (north, south, east, west, above and below). For every neighbouring generator **of the same type**, they produce extra energy equal to the **Bonus Energy** shown in their lore.
+
+> [!NOTE]
+> Diagonal blocks are not counted.
+
+### Auto Trader
+
+The Auto Trader trades with villagers automatically.
+
+1. Craft a **Merchant Soul Contract**.
+2. Right-click a villager with it. The villager is consumed and its trades are sealed into the contract.
+3. Put the contract into the Auto Trader's contract slot and click one of the unlocked trades to select it.
+4. Supply the input items and the machine does the rest.
+
+> [!TIP]
+> **Automating special ores:** whenever a villager unlocks a new trade there is a small chance (`ore-trade-chance`) that it offers one of SlimeFrame's special ores. Seal that villager into a contract and let the Auto Trader farm it for you.
+
+## Configuration
+
+The most important options in `plugins/SlimeFrame/config.yml`:
+
+| Option | Default | Description |
+|---|---|---|
+| `options.auto-update` | `true` | Automatically download new (non-major) releases |
+| `options.auto-update-major` | `false` | Also auto-download major (potentially breaking) releases |
+| `options.enable-researches` | `false` | Lock items behind Slimefun researches |
+| `options.enable-ae-items-in-soul-contracts` | `false` | Allow AdvancedEnchantments items in soul contracts |
+| `options.ore-trade-chance` | `1` | Chance (%) that a new villager trade sells a special ore |
+| `relics.lith` / `meso` / `neo` / `axi` | `50` / `750` / `10000` / `750` | Actions required per relic |
+| `drop-chance.*` | see file | Drop chances (%) per mob for special drops and reactants |
+| `messages.*` | see file | Prefix and player-facing messages |
+
+## Building from Source
+
+You need **JDK 17+** and **Maven 3.8+**.
+
+```bash
+git clone https://github.com/mybezo/SlimeFrame.git
+cd SlimeFrame
+mvn clean package
+```
+
+The plugin JAR will be in `target/SlimeFrame-vX.Y.Z.jar`.
+
+## Contributing
+
+Bug reports and pull requests are welcome!
+
+- Found a bug? [Open an issue](https://github.com/mybezo/SlimeFrame/issues/new/choose) and include the output of `/sf versions`.
+- Want to contribute code? Fork the repository, create a branch, follow the existing code style (see `.editorconfig`) and open a pull request.
 
 ## Credits
 
-Thanks to <a href="https://minecraft-heads.com/">Minecraft Heads</a> for the heads the addon uses.
-A big thanks to all the people that helped me in the programming channel in the Slimefun Discord Server.
-Thanks to the server **AbsolutGG** for letting me test the addon.
+- Original addon by [**Voper**](https://github.com/VoperAD/SlimeFrame).
+- Heads provided by [Minecraft Heads](https://minecraft-heads.com/).
+- Thanks to everyone in the Slimefun Discord programming channel who helped with development, and to the **AbsolutGG** server for testing.
 
-## Donate
+[![Minecraft Heads](https://minecraft-heads.com/images/banners/minecraft-heads_fullbanner_468x60.png)](https://minecraft-heads.com/)
 
-If you want to support the project and make someone's day, you can donate on <a href="https://ko-fi.com/voper">Ko-Fi</a> 🙂
+If you want to support the original author, you can donate on [Ko-fi](https://ko-fi.com/voper) 🙂
+
+## License
+
+SlimeFrame is licensed under the [GNU General Public License v3.0](LICENSE).

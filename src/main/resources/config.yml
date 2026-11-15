@@ -5,20 +5,20 @@ options:
   # Be careful with this option, as a new major version represents a breaking change
   auto-update-major: false
   enable-researches: false
-  # 如果服务器安装了 AdvancedEnchantments
-  # 该选项会使灵魂契约提供AE的物品
+  # If the server has the plugin AdvancedEnchantments enabled, this option will enable Soul Contracts to
+  # have trades with AE items if set to true
   enable-ae-items-in-soul-contracts: false
-  # 村民提供包含粘液战甲的矿石交易的几率（百分比）
+  # Probability of a villager obtaining a trade with one of the SlimeFrame ores in %
   ore-trade-chance: 1
 
 relics:
-  # 每钓到多少条鱼可获得古纪遗物
+  # One lith relic every X fishes caught
   lith: 50
-  # 每击杀多少生物可获得前纪遗物
+  # One meso relic every X mobs killed
   meso: 750
-  # 每破坏多少方块可获得中纪遗物
+  # One neo relic every X blocks broken
   neo: 10000
-  # 每放置多少方块可获得后纪遗物
+  # One axi relic every X blocks placed
   axi: 750
 
 # You can add any mob you want, but make sure to write their entity name correctly
@@ -58,10 +58,10 @@ commands:
     - 'traces'
 
 messages:
-  prefix: '&f[&b粘液战甲&f]'
+  prefix: '&f[&bSlimeFrame&f]'
   prefix-enabled: false
   # When a player tries to open a relic with insufficient reactants
   insufficient-reactants:
-    - '&c你需要10个反应物才能打开该遗物！'
+    - '&cYou need 10 reactants to open this relic!'
   freezing-item:
-    - '&c警告！你已经收到冰冻物品的影响！丢掉它或者穿上永冻套装！'
+    - '&cWarning! You have been exposed to a freezing item. Throw it away or wear a Cryogenic Suit.'

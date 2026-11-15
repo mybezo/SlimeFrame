@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -54,12 +55,28 @@ public class RelicInventoryListener implements Listener {
                 ItemUtils.consumeItem(currentItem, consume, false);
 //                currentItem.setAmount(currentItem.getAmount() - 1);
             } else {
-                p.sendMessage(ChatColor.RED + "你的物品栏已满！");
+                p.sendMessage(ChatColor.RED + "Your inventory is full!");
             }
             return;
         }
 
         if (e.isShiftClick()) e.setCancelled(true);
+    }
+
+    // Prevent players from dragging arbitrary items into their own relic inventory
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent e) {
+        if (!(e.getWhoClicked() instanceof Player p)) return;
+        RelicInventory relicInventory = relicInventoryManager.getRelicInventory(p);
+        if (!e.getInventory().equals(relicInventory.getInventory())) return;
+
+        int topSize = e.getView().getTopInventory().getSize();
+        for (int rawSlot : e.getRawSlots()) {
+            if (rawSlot < topSize) {
+                e.setCancelled(true);
+                return;
+            }
+        }
     }
 
 }

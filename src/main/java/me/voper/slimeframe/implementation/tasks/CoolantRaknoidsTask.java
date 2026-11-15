@@ -41,11 +41,12 @@ public class CoolantRaknoidsTask implements Runnable {
             particleLoc.setX(particleLoc.getX() + Math.cos(angle) * MULTIPLIER);
             particleLoc.setZ(particleLoc.getZ() + Math.sin(angle) * MULTIPLIER);
             entity.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 1, new Particle.DustOptions(Color.fromRGB(87, 182, 255), 2));
+        }
 
-            angle += 0.25D;
-            if (angle > 360) {
-                angle = 0D;
-            }
+        // Advance the angle once per tick so every raknoid spins at the same speed
+        angle += 0.25D;
+        if (angle > 2 * Math.PI) {
+            angle -= 2 * Math.PI;
         }
     }
 }
